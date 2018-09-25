@@ -43,13 +43,14 @@ public class WebSocket {
     @OnMessage  
     public void onMessage(String message) throws IOException {  
   
-        JSONObject jsonTo = JSONObject.parseObject(message);  
+        JSONObject jsonTo = JSONObject.parseObject(message);
           
         if (!jsonTo.get("To").equals("All")){  
-            sendMessageTo("接收人", jsonTo.get("To").toString());  
+        	String to = jsonTo.get("To").toString();
+            sendMessageTo("发给" + to + ":" + jsonTo.getString("msg"), jsonTo.get("To").toString());  
         }else{  
-            sendMessageAll("发给全部人员");  
-        }  
+            sendMessageAll("发给全部人员：" + jsonTo.getString("msg"));  
+        }
     }  
   
     @OnError  
@@ -58,7 +59,7 @@ public class WebSocket {
     }  
   
     public void sendMessageTo(String message, String To) throws IOException {  
-        // session.getBasicRemote().sendText(message);  
+        session.getBasicRemote().sendText(message);  
         //session.getAsyncRemote().sendText(message);  
         for (WebSocket item : clients.values()) {  
             if (item.username.equals(To) )  
@@ -71,8 +72,6 @@ public class WebSocket {
             item.session.getAsyncRemote().sendText(message);  
         }  
     }  
-      
-      
   
     public static synchronized int getOnlineCount() {  
         return onlineCount;  
